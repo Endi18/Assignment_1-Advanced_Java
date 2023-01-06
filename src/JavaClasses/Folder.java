@@ -24,8 +24,8 @@ public class Folder extends Thread{
         this.nGramModel = nGramModel;
         this.mysteryTextFile = mysteryTextFile;
         this.histogram = new Histogram();
-        //this.similarity = -10;
-        //this.angle = -10;
+        this.similarity = -10;
+        this.angle = -10;
         this.fullNameOfTheLanguage = null;
     }
 

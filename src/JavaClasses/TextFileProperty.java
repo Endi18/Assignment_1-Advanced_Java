@@ -54,9 +54,7 @@ public class TextFileProperty extends Thread{
             if (!read.hasNext())
                 return; // if text file is empty
 
-            String text = read.next();
-
-            text = text
+            String text = read.next()
                     .toLowerCase()
                     .replaceAll("\\p{Punct}", " ")
                     .replaceAll("\\d", " ")
@@ -78,9 +76,19 @@ public class TextFileProperty extends Thread{
 
         if(word.length() >= nGramModel){
             allTokens = IntStream.range(0, word.length() - nGramModel + 1)
-                    .mapToObj(number -> word.substring(number, number + nGramModel))
+                    .mapToObj(index -> word.substring(index, index + nGramModel))
                     .collect(Collectors.toList());
         }
         return allTokens;
+    }
+
+    @Override
+    public String toString() {
+        return "TextFileProperty{" +
+                "file=" + file +
+                ", histogram=" + histogram +
+                ", nGramModel=" + nGramModel +
+                ", vectorValue=" + vectorValue +
+                '}';
     }
 }

@@ -87,5 +87,4 @@ public class Folder extends Thread{
 
         System.out.printf("Language:%-16sSimilarity:%-15.5fAngle:%-10.5f\n", fullNameOfTheLanguage, similarity, angle);
     }
-
 }

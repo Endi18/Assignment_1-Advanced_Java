@@ -71,7 +71,7 @@ public class TextFileProperty extends Thread{
         }
     }
 
-    synchronized public List<String> tokenize(String word, int nGramModel){
+    public List<String> tokenize(String word, int nGramModel){
         List<String> allTokens = new ArrayList<>();
 
         if(word.length() >= nGramModel){

@@ -42,23 +42,8 @@ public class LanguageModel {
 
     private static boolean checkFolder(File folder){
 
-
-//        if(!folder.exists() || !folder.canRead() || !(new File(folder, "mystery.txt").exists())){
-//            System.out.println("Sorry, there is an error");
-//            return false;
-//        }
-        if(!folder.exists()){
-            System.out.println("The given folder: " + folder.getAbsolutePath() + " does not exist");
-            return false;
-        }
-
-        if(!folder.canRead()){
-            System.out.println("Permission to read denied");
-            return false;
-        }
-
-        if( !(new File(folder, "mystery.txt").exists()) ){
-            System.out.println("The file mystery.txt does not exist");
+        if(!folder.exists() || !folder.canRead() || !(new File(folder, "mystery.txt").exists())){
+            System.out.println("Sorry, there is an error");
             return false;
         }
 

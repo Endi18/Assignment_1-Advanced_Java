@@ -6,7 +6,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Folder extends Thread{
-
     private static final DecimalFormat decimalFormat = new DecimalFormat("0.00000");
     private static final Map<String, String> languagePrefixNames = new HashMap<>();
 
@@ -43,7 +42,6 @@ public class Folder extends Thread{
 
     @Override
     public void run(){
-
         languagePrefixNames.put("al", "Albanian");
         languagePrefixNames.put("de", "German");
         languagePrefixNames.put("en", "English");

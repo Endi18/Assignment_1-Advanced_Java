@@ -7,24 +7,23 @@ import java.util.concurrent.TimeUnit;
 
 public class ExecutorThreadPool {
 
-    private void shutDownAndAwaitTermination(ExecutorService poolOfThreads){
+    private void shutDownMethod(ExecutorService poolOfThreads){
         poolOfThreads.shutdown();
         try{
-            if(!poolOfThreads.awaitTermination(90, TimeUnit.MINUTES)){
+            if(poolOfThreads.awaitTermination(5400, TimeUnit.SECONDS) == false){
                 poolOfThreads.shutdown();
-                if(!poolOfThreads.awaitTermination(15, TimeUnit.MINUTES))
+                if(poolOfThreads.awaitTermination(900, TimeUnit.SECONDS) == false)
                     System.out.println("Pool has not been terminated");
             }
         }
         catch (InterruptedException e) {
             poolOfThreads.shutdown();
-            Thread.currentThread().interrupt();
         }
     }
 
-    public void executeAndAwait(List<? extends Thread> thread){
-        ExecutorService poolOfThreads = Executors.newCachedThreadPool();
-        thread.forEach(poolOfThreads::execute);
-        shutDownAndAwaitTermination(poolOfThreads);
+    public void executeMethod(List<? extends Thread> thread){
+        ExecutorService executors = Executors.newCachedThreadPool();
+        thread.forEach(executors::execute);
+        shutDownMethod(executors);
     }
 }

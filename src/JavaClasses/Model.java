@@ -12,17 +12,13 @@ public class Model extends Thread{
     @Override
     public void run(){
 
-        if(!LanguageModel.isLanguageModelCreated(mainFolderPath)){
+        if(LanguageModel.isLanguageModelCreated(mainFolderPath) == false){
             System.out.println("Program Terminated");
             System.exit(-1);
         }
-
         TextFileProperty mysteryFile = new TextFileProperty(LanguageModel.getLanguageModel().retrieveMysteryFile(), nGramModel);
         mysteryFile.start();
-
         LanguageModel.getLanguageModel().documentDistance(nGramModel, mysteryFile);
-
         LanguageModel.getLanguageModel().getLanguageSimilarToMysteryFile().forEach(System.out::println);
     }
-
 }

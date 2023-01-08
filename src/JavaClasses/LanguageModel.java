@@ -30,52 +30,6 @@ public class LanguageModel {
         return languageModel;
     }
 
-    public static boolean isLanguageModelCreated(String path){
-        File folder = new File(path);
-
-        if(checkFolder(folder)){
-            languageModel = new LanguageModel(folder);
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean checkFolder(File folder){
-
-        if(!folder.exists() || !folder.canRead() || !(new File(folder, "mystery.txt").exists())){
-            System.out.println("Sorry, there is an error");
-            return false;
-        }
-
-        return true;
-    }
-
-    public void documentDistance(int nGramModel, TextFileProperty mysteryModel){
-        String regex = "^[a-z]{2}$";
-        Predicate<String> is2LetterWord = folder -> folder.matches(regex);
-
-        List<Folder> knownLanguages = Arrays.stream(
-                        Objects.requireNonNull(mainFolder.list((parent, child) -> new File(parent, child).isDirectory())))
-                .filter(is2LetterWord)
-                .map(child -> new Folder(new File(mainFolder, child), mysteryModel, nGramModel))
-                .collect(Collectors.toList());
-
-        if(knownLanguages.isEmpty()){
-            languageSimilarToMysteryFile.add("No Language Found");
-            return;
-        }
-        else if (knownLanguages.size() < 2){
-            languageSimilarToMysteryFile.add("There MUST be at least 2 subfolder/languages");
-        }
-
-        new ExecutorThreadPool().executeAndAwait(knownLanguages);
-
-        List<Folder> result = getLanguagesWithHighestSimilarity(knownLanguages);
-
-        saveTheLanguageWithHighestSimilarity(result);
-
-    }
-
     public List<Folder> getLanguagesWithHighestSimilarity(List<Folder> knownLanguages){
         double maxValue = knownLanguages.stream()
                 .filter(language -> !Double.isNaN(language.getSimilarity()))
@@ -101,5 +55,40 @@ public class LanguageModel {
                 languageSimilarToMysteryFile.add((String.format("Nearest Language with mystery.txt is: %s Language with Similarity: %.5f and Angle: %.5f.",
                         language.getFullNameOfTheLanguage(), language.getSimilarity(), language.getAngle())))
         );
+    }
+
+    public static boolean isLanguageModelCreated(String path){
+        File folder = new File(path);
+
+        if(folder.exists() && folder.canRead() && (new File(folder, "mystery.txt").exists())){
+            languageModel = new LanguageModel(folder);
+            return true;
+        }
+        return false;
+    }
+
+    public void documentDistance(int nGramModel, TextFileProperty mysteryModel){
+        String regex = "^[a-z]{2}$";
+        Predicate<String> is2LetterWord = folder -> folder.matches(regex);
+
+        List<Folder> knownLanguages = Arrays.stream(
+                Objects.requireNonNull(mainFolder.list((parent, child) -> new File(parent, child).isDirectory())))
+                .filter(is2LetterWord)
+                .map(child -> new Folder(new File(mainFolder, child), mysteryModel, nGramModel))
+                .collect(Collectors.toList());
+
+        if(knownLanguages.isEmpty()){
+            languageSimilarToMysteryFile.add("No Language Found");
+            return;
+        }
+        else if (knownLanguages.size() < 2){
+            languageSimilarToMysteryFile.add("There MUST be at least 2 subfolder/languages");
+        }
+
+        new ExecutorThreadPool().executeMethod(knownLanguages);
+
+        List<Folder> result = getLanguagesWithHighestSimilarity(knownLanguages);
+
+        saveTheLanguageWithHighestSimilarity(result);
     }
 }

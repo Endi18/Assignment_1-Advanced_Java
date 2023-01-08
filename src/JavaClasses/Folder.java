@@ -1,7 +1,5 @@
 package JavaClasses;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.*;
@@ -25,8 +23,8 @@ public class Folder extends Thread{
         this.nGramModel = nGramModel;
         this.mysteryTextFile = mainFolder;
         this.histogram = new Histogram();
-        this.similarity = -10;
-        this.angle = -10;
+        this.similarity = -999;
+        this.angle = -999;
         this.fullNameOfTheLanguage = null;
     }
 
@@ -40,31 +38,6 @@ public class Folder extends Thread{
 
     public String getFullNameOfTheLanguage() {
         return fullNameOfTheLanguage;
-    }
-
-    @Override
-    public void run(){
-
-        updateLanguagePrefixNames();
-
-        List<TextFileProperty> textFileList = Arrays.stream(Objects.requireNonNull
-                (folder.list((file, fileName) -> fileName.endsWith(".txt"))))
-                .map(child -> new TextFileProperty(new File(folder, child), nGramModel, histogram))
-                .collect(Collectors.toList());
-
-        if(textFileList.size() == 0) {
-            System.out.println("No Text File Found");
-            return;
-        }
-
-        new ExecutorThreadPool().executeAndAwait(textFileList);
-
-
-        double A_X_B = setA_X_B(mysteryTextFile);
-        System.out.println(A_X_B);
-        setSimilarityAndAngle(mysteryTextFile.getVectorValue(), textFileList.get(0).getVectorValue(), A_X_B);
-
-        showLanguageSimilarityAndAngle();
     }
 
     private void updateLanguagePrefixNames(){
@@ -97,5 +70,27 @@ public class Folder extends Thread{
             fullNameOfTheLanguage = folder.getName();
 
         System.out.printf("Language:%-16sSimilarity:%-15.5fAngle:%-10.5f\n", fullNameOfTheLanguage, similarity, angle);
+    }
+
+    @Override
+    public void run(){
+        updateLanguagePrefixNames();
+
+        List<TextFileProperty> textFileList = Arrays.stream(Objects.requireNonNull
+                (folder.list((file, fileName) -> fileName.endsWith(".txt"))))
+                .map(child -> new TextFileProperty(new File(folder, child), nGramModel, histogram))
+                .collect(Collectors.toList());
+
+        if(textFileList.size() == 0) {
+            System.out.println("No Text File Found");
+            return;
+        }
+
+        new ExecutorThreadPool().executeMethod(textFileList);
+
+        double A_X_B = setA_X_B(mysteryTextFile);
+        setSimilarityAndAngle(mysteryTextFile.getVectorValue(), textFileList.get(0).getVectorValue(), A_X_B);
+
+        showLanguageSimilarityAndAngle();
     }
 }

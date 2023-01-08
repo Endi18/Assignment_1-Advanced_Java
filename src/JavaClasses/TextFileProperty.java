@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class TextFileProperty extends Thread{
+public class TextFileProperty extends Thread {
     private final File file;
     private final int nGramModel;
     private double vectorValue;
@@ -46,23 +45,6 @@ public class TextFileProperty extends Thread{
         return histogram;
     }
 
-    @Override
-    public void run(){
-
-        try {
-            String allText = Files.readString(Paths.get(file.getAbsolutePath()));
-
-            if (allText.isEmpty())
-                return; // if text file is empty
-
-            String text = removeDigitsPunctuation(allText);
-            populateHistogram(text);
-
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
     private List<String> tokenize(String word, int nGramModel){
         List<String> allTokens = new ArrayList<>();
 
@@ -71,7 +53,6 @@ public class TextFileProperty extends Thread{
                     .mapToObj(index -> word.substring(index, index + nGramModel))
                     .collect(Collectors.toList());
         }
-
         return allTokens;
     }
 
@@ -89,6 +70,22 @@ public class TextFileProperty extends Thread{
             words.stream()
                     .flatMap(word -> tokenize(word, nGramModel).stream())
                     .forEach(histogram::putTokens);
+        }
+    }
+
+    @Override
+    public void run(){
+        try {
+            String allText = Files.readString(Paths.get(file.getAbsolutePath()));
+
+            if (allText.isEmpty())
+                return;
+
+            String text = removeDigitsPunctuation(allText);
+            populateHistogram(text);
+
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

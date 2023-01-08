@@ -60,12 +60,6 @@ public class Folder extends Thread{
         new ExecutorThreadPool().executeAndAwait(textFileList);
 
 
-        try{
-            mysteryTextFile.join();
-        } catch (InterruptedException e){
-            e.printStackTrace();
-        }
-
         double A_X_B = setA_X_B(mysteryTextFile);
         System.out.println(A_X_B);
         setSimilarityAndAngle(mysteryTextFile.getVectorValue(), textFileList.get(0).getVectorValue(), A_X_B);

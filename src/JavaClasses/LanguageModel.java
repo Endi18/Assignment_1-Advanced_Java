@@ -54,28 +54,40 @@ public class LanguageModel {
         String regex = "^[a-z]{2}$";
         Predicate<String> is2LetterWord = folder -> folder.matches(regex);
 
-        List<Folder> knownLanguages = Arrays.stream(Objects.requireNonNull
-                (mainFolder.list((parent, child) -> new File(parent, child).isDirectory())))
+        List<Folder> knownLanguages = Arrays.stream(
+                        Objects.requireNonNull(mainFolder.list((parent, child) -> new File(parent, child).isDirectory())))
                 .filter(is2LetterWord)
                 .map(child -> new Folder(new File(mainFolder, child), mysteryModel, nGramModel))
                 .collect(Collectors.toList());
 
-        if(knownLanguages.size() == 0){
+        if(knownLanguages.isEmpty()){
             languageSimilarToMysteryFile.add("No Language Found");
             return;
+        }
+        else if (knownLanguages.size() < 2){
+            languageSimilarToMysteryFile.add("There MUST be at least 2 subfolder/languages");
         }
 
         new ExecutorThreadPool().executeAndAwait(knownLanguages);
 
+        List<Folder> result = getLanguagesWithHighestSimilarity(knownLanguages);
+
+        saveTheLanguageWithHighestSimilarity(result);
+
+    }
+
+    public List<Folder> getLanguagesWithHighestSimilarity(List<Folder> knownLanguages){
         double maxValue = knownLanguages.stream()
                 .filter(language -> !Double.isNaN(language.getSimilarity()))
                 .mapToDouble(Folder::getSimilarity)
                 .max().orElse(-999);
 
-        List<Folder> result = knownLanguages.stream()
+        return knownLanguages.stream()
                 .filter(language -> language.getSimilarity() == maxValue)
                 .toList();
+    }
 
+    private void saveTheLanguageWithHighestSimilarity(List<Folder> result){
         int numberOfLanguagesWithHighestSimilarity = result.size();
 
         if(numberOfLanguagesWithHighestSimilarity == 1)
@@ -86,9 +98,8 @@ public class LanguageModel {
                     " languages with the same highest similarity value.");
 
         result.forEach(language ->
-            languageSimilarToMysteryFile.add((String.format("Nearest Language with mystery.txt is: %s Language with Similarity: %.5f and Angle: %.5f.",
-                    language.getFullNameOfTheLanguage(), language.getSimilarity(), language.getAngle())))
+                languageSimilarToMysteryFile.add((String.format("Nearest Language with mystery.txt is: %s Language with Similarity: %.5f and Angle: %.5f.",
+                        language.getFullNameOfTheLanguage(), language.getSimilarity(), language.getAngle())))
         );
-
     }
 }
